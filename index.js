@@ -83,11 +83,15 @@ function cityHover(e) {
       console.log(city, percent_offset);
       var tooltip = new mapboxgl.Popup()
         .setLngLat(e.lngLat)
-        .setText(city.NAMELSAD10.replace(' Metro Area', ''))
+        .setHTML(tooltip_template(city))
         .addTo(map);
     }
   });
 }
+
+var tooltip_template = _.template("<p><strong><%= city.NAMELSAD10.replace(' Metro Area', '') %></strong></p><p>If <%= city.NAMELSAD10.replace(' Metro Area', '') %> had solar panels on rooftops amounting to just 1% of its area, solar could produce <%= Math.round((city.ALAND10 * 0.01 * city.MEANANN_DN) / (city.DP0010001 * 33)*100) %>% of the city's electricity needs.</p>",{
+    variable: 'city'
+  });
 
 function removeAllTooltips() {
   var oldTtips = document.getElementsByClassName('mapboxgl-popup');
