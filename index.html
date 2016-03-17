@@ -12,6 +12,8 @@
   body {
     margin: 0;
     padding: 0;
+    font: 10px sans-serif;
+
   }
   
   #map {
@@ -23,8 +25,8 @@
   
   #overlay {
     position: absolute;
-    top: 0;
-    height: 50px;
+    bottom: 0;
+    height: 150px;
     width: 300px;
     background: white;
     z-index: 999;
@@ -33,15 +35,10 @@
   .mapboxgl-popup {
     width: 200px;
   }
-  /*  .info-container {
-    margin: 0 auto;
-  }*/
-  /*  #legend {
-    margin: 0 auto;
+  
+  .caption {
+    font-weight: bold;
   }
-  .legend-color {
-    height: 10px;
-  }*/
   
   svg {
     font: 10px sans-serif;
@@ -55,12 +52,17 @@
     stroke: #000;
     shape-rendering: crispEdges;
   }
+
+  .meta {
+    font-weight: 400;
+  }
   </style>
 </head>
 
 <body>
   <div id='map'></div>
   <div id='overlay'>
+
   </div>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.6.1/lodash.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.js'></script>

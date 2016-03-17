@@ -27,7 +27,7 @@ var x = d3.scale.linear()
 
 var xAxis = d3.svg.axis()
   .scale(x)
-  .orient("bottom")
+  .orient('bottom')
   .tickSize(13)
   .tickValues(color_scale.domain())
   .tickFormat(d3.format('.2f'))
@@ -36,11 +36,11 @@ var svg = d3.select('#overlay').append('svg')
   .attr('width', 300)
   .attr('height', 50);
 
-var g = svg.append("g")
-  .attr("class", "key")
-  .attr("transform", "translate(20,20)");
+var g = svg.append('g')
+  .attr('class', 'key')
+  .attr('transform', 'translate(20,20)');
 
-g.selectAll("rect")
+g.selectAll('rect')
   .data(color_scale.range().map(function(d, i) {
     return {
       x0: i ? x(color_scale.domain()[i - 1]) : x.range()[0],
@@ -48,19 +48,38 @@ g.selectAll("rect")
       z: d
     };
   }))
-  .enter().append("rect")
-  .attr("height", 8)
-  .attr("x", function(d) {
-    return d.x0; })
-  .attr("width", function(d) {
-    return d.x1 - d.x0; })
-  .style("fill", function(d) {
-    return d.z; });
+  .enter().append('rect')
+  .attr('height', 8)
+  .attr('x', function(d) {
+    return d.x0;
+  })
+  .attr('width', function(d) {
+    return d.x1 - d.x0;
+  })
+  .style('fill', function(d) {
+    return d.z;
+  });
 
-g.call(xAxis).append("text")
-    .attr("class", "caption")
-    .attr("y", -6)
-    .text("Direct Normal Irradiance (kWh/m^2/day)");
+g.call(xAxis).append('text')
+  .attr('class', 'caption')
+  .attr('y', -6)
+  .text('Direct Normal Irradiance (DNI) kWh/m^2/day');
+
+
+
+d3.select('#overlay').append('div')
+  .append('p')
+  .attr('class', 'caption space-left2 space-top2 space-bottom2')
+  .text('Data and Sources: ')
+  .append('p')
+  .attr('class', 'meta space-top1')
+  .html('Metro and Urban Area geography: <a href="https://www.census.gov/geo/maps-data/data/tiger-line.html">US Census + Tiger/Line</a>')
+  .append('p')
+  .attr('class', 'meta')
+  .html('2010 population data: <a href="http://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml">American FactFinder</a>')
+  .append('p')
+  .attr('class', 'meta')
+  .html('Solar potential (DNI) data: <a href="maps.nrel.gov/prospector">NREL Solar Prospector</a>');
 
 
 map.on('style.load', function() {
