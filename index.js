@@ -1,5 +1,5 @@
 'use strict';
-/*global mapboxgl, _*/
+/*global mapboxgl, _, d3*/
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibW9sbHltZXJwIiwiYSI6ImNpbHNpZWZ3MDAwMWZ0eWtyNHlkeWtzN2YifQ.5yK3yfANxKfXipnYQgoQTQ';
 
@@ -14,26 +14,69 @@ var map = new mapboxgl.Map({
   ]
 });
 
+// add styling based on avg_solar DNI
+// legend values: [ 2.103, 2.945, 3.787, 4.629, 5.471, 6.313, 7.154, 7.996, 8.838]
+var colors = ['#d73027', '#f46d43', '#fdae61', '#fee090', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4'].reverse();
+var color_scale = d3.scale.threshold()
+  .domain([2.95, 3.79, 4.63, 5.47, 6.31, 7.15, 8.00, 8.84])
+  .range(colors);
+
+var x = d3.scale.linear()
+  .domain([2.10, 9.68])
+  .range([0, 250]);
+
+var xAxis = d3.svg.axis()
+  .scale(x)
+  .orient("bottom")
+  .tickSize(13)
+  .tickValues(color_scale.domain())
+  .tickFormat(d3.format('.2f'))
+
+var svg = d3.select('#overlay').append('svg')
+  .attr('width', 300)
+  .attr('height', 50);
+
+var g = svg.append("g")
+  .attr("class", "key")
+  .attr("transform", "translate(20,20)");
+
+g.selectAll("rect")
+  .data(color_scale.range().map(function(d, i) {
+    return {
+      x0: i ? x(color_scale.domain()[i - 1]) : x.range()[0],
+      x1: i < color_scale.domain().length ? x(color_scale.domain()[i]) : x.range()[1],
+      z: d
+    };
+  }))
+  .enter().append("rect")
+  .attr("height", 8)
+  .attr("x", function(d) {
+    return d.x0; })
+  .attr("width", function(d) {
+    return d.x1 - d.x0; })
+  .style("fill", function(d) {
+    return d.z; });
+
+g.call(xAxis).append("text")
+    .attr("class", "caption")
+    .attr("y", -6)
+    .text("Direct Normal Irradiance (kWh/m^2/day)");
+
+
 map.on('style.load', function() {
   map.addSource('solar', {
     type: 'vector',
     url: 'mapbox://mollymerp.9kytkh5o'
   });
 
-  // add styling based on avg_solar DNI
-  // legend values: [ 2.103, 2.945, 3.787, 4.629, 5.471, 6.313, 7.154, 7.996, 8.838]
-  
-  var colors = ['#d73027', '#f46d43', '#fdae61', '#fee090', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4'].reverse();
+
+
   var legend = document.getElementById('legend');
 
 
-  // var colors = ['#BE171F','#D1362E','#E25040','#F06B54','#FA866A','#FFA284','#FEBEA0','#F6DBBF'].reverse();
 
   _.each(colors, function(category, i) {
-    // var legend_entry = document.createElement('div')
-    // legend_entry.className += 'legend-color pad1 col1 keyline-right';
-    // legend_entry.style.backgroundColor= category;
-    // legend.appendChild(legend_entry);
+
 
     map.addLayer({
       id: 'solar-' + (i + 1),
@@ -81,9 +124,9 @@ function cityHover(e) {
   });
 }
 
-var tooltip_template = _.template("<p><strong><%= city.NAME10.replace('--', '; ') %></strong></p><p>If <%= city.NAME10.replace('--', '; ') %> had solar panels on rooftops amounting to just 1% of its total land area (<%= Math.round((city.ALAND10_2 * .01)/1000000) %> km<sup>2</sup>), solar could produce<strong> <%= Math.round(city.sol_1perc*100) %>%</strong> of the entire metro area's electricity needs.</p>",{
-    variable: 'city'
-  });
+var tooltip_template = _.template("<p><strong><%= city.NAME10.replace('--', '; ') %></strong></p><p>If <%= city.NAME10.replace('--', '; ') %> had solar panels on rooftops amounting to just 1% of its total land area (<%= Math.round((city.ALAND10_2 * .01)/1000000) %> km<sup>2</sup>), solar could produce<strong> <%= Math.round(city.sol_1perc*100) %>%</strong> of the entire metro area's electricity needs.</p>", {
+  variable: 'city'
+});
 
 function removeAllTooltips() {
   var oldTtips = document.getElementsByClassName('mapboxgl-popup');

@@ -20,24 +20,40 @@
     bottom: 0;
     width: 100%;
   }
-
+  
   #overlay {
     position: absolute;
-    bottom:0;
-    height: 150px;
+    top: 0;
+    height: 50px;
     width: 300px;
     background: white;
     z-index: 999;
   }
+  
   .mapboxgl-popup {
     width: 200px;
   }
-  .legend-color {
-    height: 25px;
-    margin-left: 3px;
-  }
-  .info-box {
+  /*  .info-container {
     margin: 0 auto;
+  }*/
+  /*  #legend {
+    margin: 0 auto;
+  }
+  .legend-color {
+    height: 10px;
+  }*/
+  
+  svg {
+    font: 10px sans-serif;
+  }
+  
+  .key path {
+    display: none;
+  }
+  
+  .key line {
+    stroke: #000;
+    shape-rendering: crispEdges;
   }
   </style>
 </head>
@@ -45,13 +61,9 @@
 <body>
   <div id='map'></div>
   <div id='overlay'>
-    <div class='space-top2' id='info-box'>
-      <div class='clearfix col12' id='legend'>
-        
-      </div>
-    </div>
   </div>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.6.1/lodash.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.js'></script>
   <script src='index.js'></script>
 </body>
 
