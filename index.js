@@ -2,18 +2,24 @@
 /*global mapboxgl, _, d3*/
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibW9sbHltZXJwIiwiYSI6ImNpbHNpZWZ3MDAwMWZ0eWtyNHlkeWtzN2YifQ.5yK3yfANxKfXipnYQgoQTQ';
+var screenHeight = document.documentElement.clientHeight;
+var screenWidth = document.documentElement.clientWidth;
+
+var zoom = screenWidth < 700 ? 2 : 3;
+var maxBounds = screenWidth < 700 ?  null : [[-143.26171875, 52.908902047770255],[-49.5703125, 15.792253570362446]];
 
 var map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mollymerp/cilsjite20036wvkmxu8yu5hx',
   center: [-98.87695312499999, 40.38002840251183],
-  zoom: 3,
-  maxBounds: [
-    [-143.26171875, 52.908902047770255],
-    [-49.5703125, 15.792253570362446]
-  ]
+  zoom: zoom,
+  maxBounds: maxBounds
 });
 
+if (screenHeight <= 600) {
+  map.scrollZoom.disable();
+  map.addControl(new mapboxgl.Navigation({position:'top-left'}))
+}
 // add styling based on avg_solar DNI
 // legend values: [ 2.103, 2.945, 3.787, 4.629, 5.471, 6.313, 7.154, 7.996, 8.838]
 var colors = ['#d73027', '#f46d43', '#fdae61', '#fee090', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4'].reverse();
@@ -134,7 +140,6 @@ function cityHover(e) {
       // formula for % of population whose energy consumption could be offset by solar
       // ALAND10 (land area in m^2) * 0.15 * MEANANN_DN (solar potential) / DP0010001 (people) * 33 kWh/day
       var city = features[0].properties;
-      console.log(city);
       var tooltip = new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(tooltip_template(city))
